@@ -11,34 +11,77 @@ import java.util.Date;
 import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 
+/**
+ * Create an object of this class for sending email
+ * @author Shriram Prajapat
+ */
 public class EmailSender {
 
     private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(EmailSender.class);
     
+    private final Properties props;
     private final String from;
     private final String pass;
     private String response;
     
+    /**
+     * Instantiate object of this class with default GMAIL configured server for specified username and password
+     * <br><br>
+     * <b>Note:</b> Gmail does not allow sending email from third-party/less secured apps by default. In order to 
+     * allow sending email from your GMAIL account, you must follow these two steps:
+     * <br>
+     * <li>
+     *   <ul>Allow less-secure apps <a href='https://myaccount.google.com/lesssecureapps'a>https://myaccount.google.com/lesssecureapps</a></ul>
+     *   <ul>Disable Two step verification from settings <a href='https://myaccount.google.com/security'>https://myaccount.google.com/security</a></ul>
+     * </li>
+     * @param from <b>Email-Id</b> of the <b>sender's</b> account
+     * @param pass <b>Password</b> of the <b>sender's</b> account
+     */
     public EmailSender(String from, String pass) {
         this.from = from;
         this.pass = pass;
-    }
-    
-    
-       public String sendMail(String to, String subject, String bodyText, String[] attachmentFiles){
-         if(!Internet.isAvailable()){
-             return "No Internet Connection available!";
-         }
-//        from = "munnamanish01@gmail.com";
-//        pass = "manish01";
+        
         // Creates a Session with the following properties.
-        Properties props = new Properties();
+        props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.connectiontimeout", "10000");
         props.put("mail.smtp.timeout", "10000");
+    }
+    
+    /**
+     * Instantiate object of this class of configured email server with configuration specified in properties file for specified username and password
+     * @param from <b>Email-Id</b> of the <b>sender's</b> account
+     * @param pass <b>Password</b> of the <b>sender's</b> account
+     * @param props Properties configured for the custom mail-server
+     */
+    public EmailSender(String from, String pass, Properties props) {
+        this.from = from;
+        this.pass = pass;
+        // Creates a Session with the user-defined properties.
+        this.props = props;
+    }
+    
+    /**
+     * Trigger email-send
+     * @param to Email -id of the receiver
+     * @param subject Subject of the Email
+     * @param bodyText Body/Message/Content of the Email
+     * @param attachmentFiles Attachment files (if any, can be passed null) 
+     * @return Response from server
+     */
+    public String sendMail(String to, String subject, String bodyText, String[] attachmentFiles){
+         if(!Internet.isAvailable()){
+             return "No Internet Connection available!";
+         }
+         if(null==props){
+             return "No Server Configurations Specified. Please sepcify a properties file";
+         }
+//        from = "munnamanish01@gmail.com";
+//        pass = "manish01";
+        
         //props.put("mail.smtp.auth", "true"); 
         
 //        Session session = Session.getInstance(props,
@@ -95,10 +138,18 @@ public class EmailSender {
         }
     }
        
+    /**
+     * Status of the mail sent
+     * @return true for successful, else false
+     */
     public boolean isSuccessfull(){
         return response.contains("success");
     }
     
+    /**
+     * Response sent from server on mail-sent
+     * @return Response from server
+     */
     public String getMessage(){
         return response;
     }

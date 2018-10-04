@@ -21,7 +21,7 @@ public class Internet {
           LOGGER.info("Internet available");
           return true;
       }catch(IOException ex){
-          LOGGER.error("Internet Not Available - Error reaching host : ",ex);
+          LOGGER.error("Internet Not Available - Error reaching host GOOGLE ",ex);
           return false;
       }
   }

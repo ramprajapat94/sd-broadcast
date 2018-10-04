@@ -148,10 +148,10 @@ import org.apache.logging.log4j.LogManager;
         return response.contains("true");//httpResponse.getBody().contains("true");
     }
     
-      public static void main(String[] args) {
-          String sms  = new Fast2SMS("XDuJeMUNyhPACfStz524BlL1vdwTYkspOx8WK7HabIjgR9omFibQmXeLrEPoOjTfVtRJ5vDqgzCM4Y3Z").sendSms("Hello", "7399780500");
-          System.out.println(sms);
-      }
+//      public static void main(String[] args) {
+//          String sms  = new Fast2SMS("XDuJeMUNyhPACfStz524BlL1vdwTYkspOx8WK7HabIjgR9omFibQmXeLrEPoOjTfVtRJ5vDqgzCM4Y3Z").sendSms("Hello", "7399780500");
+//          System.out.println(sms);
+//      }
   }
     
     
