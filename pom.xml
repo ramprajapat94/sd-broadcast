@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.sdigitizers</groupId>
+    <groupId>com.sdigitizers.util</groupId>
     <artifactId>broadcast</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
+    <name>broadcast</name>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,11 +23,13 @@
             <id>SD001</id>
             <name>Shriram Prajapat</name>
             <email>solution.ramsofts@gmail.com</email>
-            <organization>Sanatan Digitizers</organization>
+            <organization>Sanatan Digitizers Pvt Ltd</organization>
             <organizationUrl>http://www.sanatandigitizers.com</organizationUrl>
             <url>https://in.linkedin.com/in/shriram-prajapat</url>
             <roles>
-                <role>Founder, M.D. and CEO</role>
+                <role>Founder</role>
+                <role>Director</role>
+                <role>CEO</role>
             </roles>
         </developer>
     </developers>
