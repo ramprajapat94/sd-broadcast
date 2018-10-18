@@ -13,6 +13,10 @@ import org.apache.logging.log4j.LogManager;
 public class Internet {
     private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(Internet.class);
     
+    /**
+     * Check if internet is available/working on this device
+     * @return true if internet found in working condition else false
+     */
     public static boolean isAvailable() {
       try{
           URL url = new URL("http://www.google.com");

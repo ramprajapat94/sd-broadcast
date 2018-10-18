@@ -34,7 +34,6 @@ public class SendMailSSL {
 			});
 
 		try {
-
 			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress("solution.ramsofts@gmail.com"));
 			message.setRecipients(Message.RecipientType.TO,

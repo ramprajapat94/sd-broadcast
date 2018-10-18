@@ -49,6 +49,7 @@ public class EmailSender {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.connectiontimeout", "10000");
         props.put("mail.smtp.timeout", "10000");
+        
     }
     
     /**
@@ -99,6 +100,7 @@ public class EmailSender {
             // Create an Internet mail msg.
             MimeMessage msg = new MimeMessage(session);
             msg.setFrom(fromAddress);
+            //msg.setRecipients(Message.RecipientType.TO, addresses);
             msg.setRecipient(Message.RecipientType.TO, toAddress);
             msg.setSubject(subject);
             msg.setSentDate(new Date());
