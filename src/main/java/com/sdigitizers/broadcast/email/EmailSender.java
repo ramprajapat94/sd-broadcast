@@ -77,6 +77,11 @@ public class EmailSender {
          if(!Internet.isAvailable()){
              return "No Internet Connection available!";
          }
+         if(to==null || to.isEmpty()){
+             return "Please specify a valid recepient";
+         }
+         if(subject==null)subject="";
+         if(bodyText==null)bodyText="";
          if(null==props){
              return "No Server Configurations Specified. Please sepcify a properties file";
          }
@@ -132,7 +137,7 @@ public class EmailSender {
             Transport.send(msg, from, pass);
             
             LOGGER.info("Email sent to "+to);
-            return (response="success");
+            return (response="Email sent");
             
         } catch (MessagingException e) {
             LOGGER.error("Error sending email", e);
@@ -141,11 +146,109 @@ public class EmailSender {
     }
        
     /**
+     * Trigger email-send
+     * @param em
+     * @return Response from server
+     */
+    public String sendMail(EmailMessage em){
+         if(!Internet.isAvailable()){
+             return "No Internet Connection available!";
+         }
+         if(null==em){
+             return "Invalid email message (Cannot be null)";
+         }
+         if(em.getTo().isEmpty()){
+             return "Please specify atleast one recepient (to)";
+         }
+         if(null==props){
+             return "No Server Configurations Specified. Please sepcify a properties file";
+         }
+//        from = "munnamanish01@gmail.com";
+//        pass = "manish01";
+        
+        //props.put("mail.smtp.auth", "true"); 
+        
+//        Session session = Session.getInstance(props,
+//              new javax.mail.Authenticator() {
+//                protected PasswordAuthentication getPasswordAuthentication() {
+//                    return new PasswordAuthentication(username, password);
+//                }
+//              });
+
+        Session session = Session.getDefaultInstance(props);
+        try {
+            InternetAddress fromAddress = new InternetAddress(from);
+            
+            InternetAddress toAddresses[] = new InternetAddress[em.getTo().size()];
+            for(int i=0; i<toAddresses.length; i++){
+                toAddresses[i] = new InternetAddress(em.getTo().get(i));
+            }
+            
+            InternetAddress ccAddresses[] = new InternetAddress[em.getCc().size()];
+            for(int i=0; i<ccAddresses.length; i++){
+                ccAddresses[i] = new InternetAddress(em.getCc().get(i));
+            }
+            
+            InternetAddress bccAddresses[] = new InternetAddress[em.getBcc().size()];
+            for(int i=0; i<bccAddresses.length; i++){
+                bccAddresses[i] = new InternetAddress(em.getBcc().get(i));
+            }
+
+            // Create an Internet mail msg.
+            MimeMessage msg = new MimeMessage(session);
+            msg.setFrom(fromAddress);
+            msg.setRecipients(Message.RecipientType.TO, toAddresses);
+            if(ccAddresses.length != 0)msg.setRecipients(Message.RecipientType.CC, ccAddresses);
+            if(bccAddresses.length != 0)msg.setRecipients(Message.RecipientType.BCC, bccAddresses);
+            msg.setSubject(em.getSubject());
+            msg.setSentDate(new Date());
+
+            // Set the email msg text.
+            MimeBodyPart messagePart = new MimeBodyPart();
+            messagePart.setText(em.getBodyText());
+
+            
+            // Create Multipart E-Mail.
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messagePart);
+            
+            // Set the email attachment files
+            String attachmentFiles[] = new String[em.getAttachments().size()];
+            for(int i=0; i<attachmentFiles.length; i++){
+                attachmentFiles[i] = em.getAttachments().get(i).getAbsolutePath();
+            }
+            
+            if(attachmentFiles.length > 0){
+                for(String attachmentFile : attachmentFiles){
+                    FileDataSource fileDataSource = new FileDataSource(attachmentFile);
+                    MimeBodyPart attachmentPart = new MimeBodyPart();
+                    attachmentPart.setDataHandler(new DataHandler(fileDataSource));
+                    attachmentPart.setFileName(fileDataSource.getName());
+//                    try { attachPart.attachFile(filePath);
+//                    } catch (IOException ex) { ex.printStackTrace(); }
+                    multipart.addBodyPart(attachmentPart);
+                }
+            }
+
+            msg.setContent(multipart);
+
+            Transport.send(msg, from, pass);
+            
+            LOGGER.info("Email sent");
+            return (response="Email sent");
+            
+        } catch (MessagingException e) {
+            LOGGER.error("Error sending email", e);
+            return (response=e.getMessage());
+        }
+    }
+    
+    /**
      * Status of the mail sent
      * @return true for successful, else false
      */
     public boolean isSuccessfull(){
-        return response.contains("success");
+        return response.contains("Email sent");
     }
     
     /**
