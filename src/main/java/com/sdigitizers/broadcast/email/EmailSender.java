@@ -22,6 +22,7 @@ public class EmailSender {
     private final Properties props;
     private final String from;
     private final String pass;
+    private EmailConfig emailConfig = new EmailConfig();
     private String response;
     
     /**
@@ -43,14 +44,19 @@ public class EmailSender {
         
         // Creates a Session with the following properties.
         props = new Properties();
+        props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
-        props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.connectiontimeout", "10000");
         props.put("mail.smtp.timeout", "10000");
         
+        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+	props.put("mail.smtp.auth", "true");
+        
     }
+
     
     /**
      * Instantiate object of this class of configured email server with configuration specified in properties file for specified username and password
@@ -63,6 +69,15 @@ public class EmailSender {
         this.pass = pass;
         // Creates a Session with the user-defined properties.
         this.props = props;
+    }
+    
+    
+    public EmailConfig getEmailConfig() {
+        return emailConfig;
+    }
+
+    public void setEmailConfig(EmailConfig emailConfig) {
+        this.emailConfig = emailConfig;
     }
     
     /**
@@ -82,22 +97,22 @@ public class EmailSender {
          }
          if(subject==null)subject="";
          if(bodyText==null)bodyText="";
-         if(null==props){
-             return "No Server Configurations Specified. Please sepcify a properties file";
+         if(null!=attachmentFiles && attachmentFiles.length > emailConfig.getAttachmentsLimit()){
+             return "Attachments limit crossed";
          }
-//        from = "munnamanish01@gmail.com";
-//        pass = "manish01";
-        
-        //props.put("mail.smtp.auth", "true"); 
-        
-//        Session session = Session.getInstance(props,
-//              new javax.mail.Authenticator() {
-//                protected PasswordAuthentication getPasswordAuthentication() {
-//                    return new PasswordAuthentication(username, password);
-//                }
-//              });
+         if(null==props){
+             return "No Mail-Server Configurations Specified. Please sepcify a properties file";
+         }
 
-        Session session = Session.getDefaultInstance(props);
+        Session session = Session.getInstance(props,
+              new javax.mail.Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(from, pass);
+                }
+              });
+
+        //Session session = Session.getDefaultInstance(props);
         try {
             InternetAddress fromAddress = new InternetAddress(from);
             InternetAddress toAddress = new InternetAddress(to);
@@ -123,6 +138,9 @@ public class EmailSender {
             if(null != attachmentFiles && attachmentFiles.length > 0){
                 for(String attachmentFile : attachmentFiles){
                     FileDataSource fileDataSource = new FileDataSource(attachmentFile);
+                    if(fileDataSource.getFile().length() > emailConfig.getFileSizeLimitInBytes()){
+                        return "File "+fileDataSource.getName()+" is bigger than the file size limit allowed";
+                    }
                     MimeBodyPart attachmentPart = new MimeBodyPart();
                     attachmentPart.setDataHandler(new DataHandler(fileDataSource));
                     attachmentPart.setFileName(fileDataSource.getName());
@@ -133,8 +151,7 @@ public class EmailSender {
             }
 
             msg.setContent(multipart);
-
-            Transport.send(msg, from, pass);
+            Transport.send(msg);
             
             LOGGER.info("Email sent to "+to);
             return (response="Email sent");
@@ -163,19 +180,19 @@ public class EmailSender {
          if(null==props){
              return "No Server Configurations Specified. Please sepcify a properties file";
          }
-//        from = "munnamanish01@gmail.com";
-//        pass = "manish01";
+        if(null!=em.getAttachments() && em.getAttachments().size() > emailConfig.getAttachmentsLimit()){
+             return "Attachments limit crossed";
+         }
         
-        //props.put("mail.smtp.auth", "true"); 
-        
-//        Session session = Session.getInstance(props,
-//              new javax.mail.Authenticator() {
-//                protected PasswordAuthentication getPasswordAuthentication() {
-//                    return new PasswordAuthentication(username, password);
-//                }
-//              });
+        Session session = Session.getInstance(props,
+              new javax.mail.Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(from, pass);
+                }
+              });
 
-        Session session = Session.getDefaultInstance(props);
+        //Session session = Session.getDefaultInstance(props);
         try {
             InternetAddress fromAddress = new InternetAddress(from);
             
@@ -231,8 +248,7 @@ public class EmailSender {
             }
 
             msg.setContent(multipart);
-
-            Transport.send(msg, from, pass);
+            Transport.send(msg);
             
             LOGGER.info("Email sent");
             return (response="Email sent");
@@ -258,4 +274,9 @@ public class EmailSender {
     public String getMessage(){
         return response;
     }
+    
+//    public static void main(String[] args) {
+//        String s = new EmailSender("munnamanish01@gmail.com", "manish01").sendMail("solution.ramsofts@gmail.com", "test", "message", null);
+//        System.out.println(s);
+//    }
 }

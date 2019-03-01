@@ -6,6 +6,6 @@ package com.sdigitizers.broadcast.sms;
  */
 public enum SmsCompany {
     
-    BHASH_SMS, TEXTLOCAL, FAST_2_SMS;
+    BHASH_SMS, TEXTLOCAL, FAST_2_SMS, ROUND_SMS;
     
 }
