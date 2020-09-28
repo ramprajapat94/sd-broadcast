@@ -1,23 +1,36 @@
 
-package com.sdigitizers.broadcast.email;
+package com.sdigitizers.notification.email;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+//import javax.mail.internet.AddressException;
+//import javax.mail.internet.InternetAddress;
 
 /**
  *
  * @author Shriram Prajapat
  */
-public class EmailMessage {
+public final class EmailMessage {
     
     private List<String> to;
     private List<String> cc;
     private List<String> bcc;
     private String subject;
     private String bodyText;
-    private List<File> attachments;
+    private List<String> attachments;
+
+    public EmailMessage() {
+    }
+
+    
+    public EmailMessage(String to, String subject, String message) {
+        setTo(to);
+        this.subject = subject;
+        this.bodyText = message;
+    }
+    
+    
     
     public List<String> getTo() {
         if(null == to) to = new ArrayList<>(1);
@@ -102,18 +115,30 @@ public class EmailMessage {
         return this;
     }
 
-    public List<File> getAttachments() {
+    public List<String> getAttachments() {
         if(null == attachments) attachments = new ArrayList<>(1);
         return attachments;
     }
 
-    public EmailMessage setAttachments(List<File> attachments) {
+    public EmailMessage setAttachments(List<String> attachments) {
         this.attachments = attachments;
         return this;
     }
     
-    public String send(String email, String pass){
-         return new EmailSender(email, pass).sendMail(this);
+    public static String formatMessageForEmail(String message){
+        return "<HTML><BODY>"+message.replace("\n", "<br>")+"</BODY></HTML>";
     }
     
+//    public static boolean isValidEmailAddress(String email) {
+//        boolean result = true;
+//        try {
+//           InternetAddress emailAddr = new InternetAddress(email);
+//           emailAddr.validate();
+//        } catch (AddressException ex) {
+//            System.out.println(ex);
+//           result = false;
+//        }
+//        return result;
+//     }
+
 }

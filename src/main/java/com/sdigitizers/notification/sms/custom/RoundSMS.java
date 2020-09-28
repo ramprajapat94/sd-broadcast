@@ -1,7 +1,7 @@
 
-package com.sdigitizers.broadcast.sms;
+package com.sdigitizers.notification.sms.custom;
 
-import com.sdigitizers.broadcast.Internet;
+import com.sdigitizers.notification.Utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,10 +16,12 @@ import org.apache.logging.log4j.LogManager;
  public class RoundSMS implements SMS{
       
     private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(RoundSMS.class);
+    /** Default SenderId = RNDSMS */
+    public static final String SENDER_ID = "RNDSMS";
      
     private final String AUTH_KEY;
     private final String SENDER;
-    private final RoundSmsType type;
+    private final DCS type;
     private final RoundSmsRoute route;
     private String response = "";
 
@@ -29,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
      * @param type
      * @param route
      */
-    public RoundSMS(String authKey, String sender, RoundSmsType type, RoundSmsRoute route) {
+    public RoundSMS(String authKey, String sender, DCS type, RoundSmsRoute route) {
         this.AUTH_KEY = authKey;
         this.SENDER = sender;
         this.type = type;
@@ -41,18 +43,18 @@ import org.apache.logging.log4j.LogManager;
      * @param type
      * @param route
      */
-    public RoundSMS(String authKey, RoundSmsType type, RoundSmsRoute route){
+    public RoundSMS(String authKey, DCS type, RoundSmsRoute route){
         this(authKey, "RNDSMS", type, route);
     }
     /**
      * http://roundsms.in/easy-api.php
      * @param msg
-     * @param mobiles
+     * @param numbers
      * @return 
      */
     @Override
     public String sendSms(String msg, String numbers) {
-        if(!Internet.isAvailable()){
+        if(!Utils.isAvailable()){
              response = "No Internet Connection available!";
              return response;
         }
@@ -114,10 +116,13 @@ import org.apache.logging.log4j.LogManager;
         return response.startsWith("S.");
     }
     
-    public static enum RoundSmsType{
+    /**
+     * Data Coding Style (Normal=0 / Unicode=2)
+     */
+    public static enum DCS{
         NORMAL(1), UNICODE(2);
         private final int code;
-        private RoundSmsType(int code){
+        private DCS(int code){
             this.code = code;
         }
         public int getCode(){
@@ -126,7 +131,7 @@ import org.apache.logging.log4j.LogManager;
     }
     
     public static enum RoundSmsRoute{
-        Promotiona(1), Transactional(2), PromoSenderId(3);
+        Promotional(1), Transactional(2), PromoSenderId(3);
         private final int code;
         private RoundSmsRoute(int code){
             this.code = code;

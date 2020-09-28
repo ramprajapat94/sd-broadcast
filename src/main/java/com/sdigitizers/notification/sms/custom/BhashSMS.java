@@ -1,7 +1,7 @@
 
-package com.sdigitizers.broadcast.sms;
+package com.sdigitizers.notification.sms.custom;
 
-import com.sdigitizers.broadcast.Internet;
+import com.sdigitizers.notification.Utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,7 +41,7 @@ import org.apache.logging.log4j.LogManager;
       //user=success&pass=123456&sender=TESTNG&phone=8638210083&text=API%20Test%20SMS&priority=ndnd&stype=normal
     @Override
     public String sendSms(String msg, String number) {
-        if(!Internet.isAvailable()){
+        if(!Utils.isAvailable()){
              response = "No Internet Connection available!";
              return response;
         }

@@ -1,11 +1,11 @@
 
 
-package com.sdigitizers.broadcast.sms;
+package com.sdigitizers.notification.sms.custom;
 
 //import com.mashape.unirest.http.HttpResponse;
 //import com.mashape.unirest.http.Unirest;
 //import com.mashape.unirest.http.exceptions.UnirestException;
-import com.sdigitizers.broadcast.Internet;
+import com.sdigitizers.notification.Utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,6 +21,8 @@ import org.apache.logging.log4j.LogManager;
   public class Fast2SMS implements SMS{
       
     private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(Fast2SMS.class);
+    /** Default SenderId = FSTSMS */
+    public static final String SENDER_ID = "FSTSMS";
     
     private final String API_KEY;
     private final String SENDER;
@@ -38,7 +40,7 @@ import org.apache.logging.log4j.LogManager;
     }
     
     public Fast2SMS(String apiKey) {
-        this(apiKey, "FSTSMS");
+        this(apiKey, SENDER_ID);
     }
     
     /**
@@ -49,7 +51,7 @@ import org.apache.logging.log4j.LogManager;
      */
     @Override
     public String sendSms(String msg, String number) {
-        if(!Internet.isAvailable()){
+        if(!Utils.isAvailable()){
              response = "No Internet Connection available!";
              return response;
         }
@@ -64,16 +66,13 @@ import org.apache.logging.log4j.LogManager;
 
 //            "sender_id="+sender+"&message=This%20is%20a%20test%20message&language=english&route=p&numbers=8962239013%2C7773854335&flash=1"
               //Send data
-//            HttpResponse<String> httpRes = Unirest.post("https://www.fast2sms.com/dev/bulk")
-//                .header("authorization", API_KEY)
-//                .header("Content-Type", "application/x-www-form-urlencoded")
-//                .body(sender+message+language+route+numbers+flash)
-//                .asString();
+
 
                 HttpURLConnection conn = (HttpURLConnection) new URL("https://www.fast2sms.com/dev/bulk").openConnection();
                 String data = sender+message+language+route+numbers+flash;
                 conn.setDoOutput(true);
                 conn.setRequestMethod("POST");
+                conn.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
                 conn.setRequestProperty("authorization", API_KEY);
                 conn.setRequestProperty("Content-Length", Integer.toString(data.length()));
                 conn.getOutputStream().write(data.getBytes("UTF-8"));

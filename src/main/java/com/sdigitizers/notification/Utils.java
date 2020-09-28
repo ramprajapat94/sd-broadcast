@@ -1,5 +1,5 @@
 
-package com.sdigitizers.broadcast;
+package com.sdigitizers.notification;
 
 import java.io.IOException;
 import java.net.URL;
@@ -10,8 +10,8 @@ import org.apache.logging.log4j.LogManager;
  *
  * @author Shriram Prajapat
  */
-public class Internet {
-    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(Internet.class);
+public class Utils {
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(Utils.class);
     
     /**
      * Check if internet is available/working on this device
@@ -29,8 +29,5 @@ public class Internet {
           return false;
       }
   }
-    
-    public static void main(String[] args) {
-        System.out.println(isAvailable());
-    }
+   
 }
